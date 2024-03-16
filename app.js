@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const responses = require('./middlewares/responses')
 const sequelize = require('./database/config')
 const auth = require('./routes/auth')
+const user = require('./routes/users')
 const Folder = require('./models/folders')
 const Password = require('./models/passwords')
 const {createAdmin, User} = require('./models/users')
@@ -28,6 +29,7 @@ app.use(bodyParser.json())
 
 //RUTAS
 app.use('/auth',auth)
+app.use('/user',user)
 
 //RESPUESTAS
 app.use(responses.sendResponse)

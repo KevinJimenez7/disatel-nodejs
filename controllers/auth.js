@@ -29,6 +29,7 @@ module.exports.getToken = async(req, res, next) => {
         if(passwordMatch){
             const token = await jwt.sign({
                 username: user.username,
+                email: user.email,
                 rol: user.rol
             }, process.env.ACCESS_TOKEN_SECRET, {expiresIn: process.env.TOKEN_EXPIRES_TIME  || '1h'})
 
@@ -38,7 +39,8 @@ module.exports.getToken = async(req, res, next) => {
                     username: user.username,
                     fullName: user.fullName,
                     rol: user.rol,
-                    token: token
+                    token: token,
+                    resetPassword: user.resetPassword,
                 },
                 req, res
             )    

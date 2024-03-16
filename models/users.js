@@ -37,6 +37,11 @@ const User = sequelize.define('user', {
     password: {
         type: Sequelize.STRING,
         allowNull: false
+    },
+    resetPassword: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
     }
 })
 
@@ -61,7 +66,8 @@ async function createAdmin () {
             username: createUsername(process.env.ADMIN_FIRST_NAME, process.env.ADMIN_LAST_NAME),
             phone: process.env.ADMIN_PHONE,
             rol: 'ADMIN',
-            password: hashedPassword
+            password: hashedPassword,
+            resetPassword: false
         })
     } catch (err) {
         console.log('Error al crear usuario administrador', err);
