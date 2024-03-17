@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 
 const sequelize = require('../database/config')
-const Folder = require('./folders')
+const {Folder} = require('./folders')
 
 const Password = sequelize.define('passwords', {
     passwordId: {
@@ -12,7 +12,8 @@ const Password = sequelize.define('passwords', {
     },
     name: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     username: {
         type: Sequelize.STRING,

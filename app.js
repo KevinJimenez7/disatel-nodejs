@@ -5,6 +5,8 @@ const responses = require('./middlewares/responses')
 const sequelize = require('./database/config')
 const auth = require('./routes/auth')
 const user = require('./routes/users')
+const folder = require('./routes/folders')
+const password = require('./routes/passwords')
 const Folder = require('./models/folders')
 const Password = require('./models/passwords')
 const {createAdmin, User} = require('./models/users')
@@ -30,6 +32,8 @@ app.use(bodyParser.json())
 //RUTAS
 app.use('/auth',auth)
 app.use('/user',user)
+app.use('/folder',folder)
+app.use('/credential',password)
 
 //RESPUESTAS
 app.use(responses.sendResponse)

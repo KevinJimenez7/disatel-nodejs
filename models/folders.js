@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
-
 const sequelize = require('../database/config')
-const {User} = require('./users')
+const {User} = require('./users');
+const Password = require('./passwords')
 
 const Folder = sequelize.define('folders', {
     folderId: {
@@ -19,12 +19,12 @@ const Folder = sequelize.define('folders', {
         allowNull: false,
         defaultValue: true
     },
-    userEmail: {
-        type: Sequelize.STRING,
+    userId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: User,
-            key: 'email'
+            model: User, // Utiliza User como una propiedad del objeto importado
+            key: 'userId'
         }
     },
     active: {
@@ -35,5 +35,7 @@ const Folder = sequelize.define('folders', {
 },{
     timestamps: false
 })
+
+Folder.hasMany(Password, { foreignKey: 'folderId' });
 
 module.exports = Folder

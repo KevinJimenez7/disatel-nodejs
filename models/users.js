@@ -4,15 +4,26 @@ const bcrypt = require('bcryptjs')
 const {hashPassword} = require('../utils/hashedPassword')
 const createUsername = require('../utils/createUsername')
 const sequelize = require('../database/config')
+const Folder = require('./folders')
 require('dotenv').config()
 
 const User = sequelize.define('user', {
+    userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true
+    },
     email: {
         type: Sequelize.STRING,
         allowNull: false,
-        primaryKey: true
+        unique: true
     },
-    fullName: {
+    firstName: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    lastName: {
         type: Sequelize.STRING,
         allowNull: false
     },
@@ -45,6 +56,8 @@ const User = sequelize.define('user', {
     }
 })
 
+User.hasMany(Folder, { foreignKey: 'userId' });
+
 async function createAdmin () {
     try{
         const user = await User.findOne({
@@ -62,7 +75,8 @@ async function createAdmin () {
 
         await User.create({
             email: process.env.ADMIN_EMAIL,
-            fullName: `${process.env.ADMIN_FIRST_NAME} ${process.env.ADMIN_LAST_NAME}`,
+            firstName: process.env.ADMIN_FIRST_NAME,
+            lastName: process.env.ADMIN_LAST_NAME,
             username: createUsername(process.env.ADMIN_FIRST_NAME, process.env.ADMIN_LAST_NAME),
             phone: process.env.ADMIN_PHONE,
             rol: 'ADMIN',

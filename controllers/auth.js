@@ -17,10 +17,19 @@ module.exports.getToken = async(req, res, next) => {
         })
 
         if(!user){
-            handleError(
+            return handleError(
                 'Usuario no existe', 
                 400, 
                 'El correo electrónico que ingresaste no está registrado',
+                next
+                )
+        }
+
+        if(!user.active){
+            return handleError(
+                'Usuario inactivo', 
+                400, 
+                'El usuario esta inactivo, contacte al administrador.',
                 next
                 )
         }
@@ -30,14 +39,16 @@ module.exports.getToken = async(req, res, next) => {
             const token = await jwt.sign({
                 username: user.username,
                 email: user.email,
-                rol: user.rol
+                rol: user.rol,
+                id: user.userId
             }, process.env.ACCESS_TOKEN_SECRET, {expiresIn: process.env.TOKEN_EXPIRES_TIME  || '1h'})
 
             handleSuccess(
                 'Inicio de sesión exitoso',
                 {
                     username: user.username,
-                    fullName: user.fullName,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
                     rol: user.rol,
                     token: token,
                     resetPassword: user.resetPassword,
