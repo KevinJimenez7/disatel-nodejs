@@ -61,7 +61,7 @@ module.exports.createUser = async(req, res, next) => {
 }
 
 module.exports.editUser = async(req, res, next) => {
-    const {firstName, lastName, email, phone, newEmail} = req.body
+    const {firstName, lastName, email, phone, id} = req.body
     const {rol} = getTokenData(req)
 
     if(rol === 'USER'){
@@ -76,7 +76,7 @@ module.exports.editUser = async(req, res, next) => {
     try {
         const user = await User.findOne({
             where: {
-                email: email
+                userId: id
             }
         })
 
@@ -91,11 +91,11 @@ module.exports.editUser = async(req, res, next) => {
 
         const userEmail = await User.findOne({
             where: {
-                email: newEmail
+                email: email
             }
         })
 
-        if(userEmail && email.trim() !== newEmail.trim()){
+        if(userEmail && userEmail.userId !== id){
             return handleError(
                 'Correo electrónico no disponible',
                 400,
@@ -107,14 +107,13 @@ module.exports.editUser = async(req, res, next) => {
         let observaciones = []
          
         if(username !== user.username) observaciones.push('El nombre de usuario cambió a consecuencia del cambio de nombre y apellido')
-        console.log(email, newEmail);
-        if(email !== newEmail) observaciones.push('El correo electrónico cambió, tómalo en cuenta en el próximo inicio de sesión')
+        if(user.email !== email) observaciones.push('El correo electrónico cambió, tómalo en cuenta en el próximo inicio de sesión')
 
         await user.update({
             firstName: firstName,
             lastName: lastName,
             username: username,
-            email: newEmail,
+            email: email,
             phone: phone
         })
         .then(() => {
@@ -123,7 +122,7 @@ module.exports.editUser = async(req, res, next) => {
                 {
                     username: username,
                     name: `${firstName.trim()} ${lastName.trim()}`,
-                    email: newEmail,
+                    email: email,
                     phone: phone,
                     observations: observaciones
                 },
@@ -186,7 +185,7 @@ module.exports.changePassword = async(req, res, next) => {
 }
 
 module.exports.resetPassword = async(req, res, next) => {
-    const {email} = req.body
+    const {id} = req.body
     const {rol} = getTokenData(req)
 
     if(rol === 'USER'){
@@ -201,7 +200,7 @@ module.exports.resetPassword = async(req, res, next) => {
     try {
         const user = await User.findOne({
             where: {
-                email: email
+                userId: id
             }
         })
 
@@ -209,12 +208,12 @@ module.exports.resetPassword = async(req, res, next) => {
             return handleError(
                 'Usuario no existente', 
                 400, 
-                'El correo electrónico que ingresaste no está registrado',
+                'El usuario no se encontró en base de datos',
                 next
                 )
         }
 
-        const temporalPassword = (await hashPassword(email)).slice(0, 10);
+        const temporalPassword = (await hashPassword(user.email)).slice(0, 10);
         const hashedPassword = await hashPassword(temporalPassword)
 
         await user.update({password: hashedPassword, resetPassword: true})
@@ -222,7 +221,7 @@ module.exports.resetPassword = async(req, res, next) => {
             return handleSuccess(
                 'Contraseña reiniciada exitosamente',
                 {
-                    email: email,
+                    email: user.email,
                     temporalPassword: temporalPassword
                 },
                 req, res
@@ -242,7 +241,7 @@ module.exports.resetPassword = async(req, res, next) => {
 }
 
 module.exports.activateUser = async(req, res, next) => {
-    const {email, active} = req.body
+    const {id} = req.body
     const {rol} = getTokenData(req)
 
     if(rol === 'USER'){
@@ -257,7 +256,7 @@ module.exports.activateUser = async(req, res, next) => {
     try {
         const user = await User.findOne({
             where: {
-                email: email
+                userId: id
             }
         })
 
@@ -270,13 +269,13 @@ module.exports.activateUser = async(req, res, next) => {
                 )
         }
 
-        await user.update({active: active})
+        let activate = !user.active
+
+        await user.update({active: activate})
         .then(() => {
             return handleSuccess(
-                `Usuario ${active ? 'activado' : 'desactivado'} correctamente`,
-                {
-                    email: email
-                },
+                `Usuario ${activate ? 'activado' : 'desactivado'} correctamente`,
+                null,
                 req, res
             )
         })
@@ -286,7 +285,7 @@ module.exports.activateUser = async(req, res, next) => {
         handleError(
             'Error al realizar la acción',
             500,
-            `Ocurrió un error al ${active ? 'activar' : 'desactivar'} el usuario, intenta nuevamente`,
+            `Ocurrió un error con la activación del usuario, intenta nuevamente`,
             next
         )
     }

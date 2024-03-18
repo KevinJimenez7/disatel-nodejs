@@ -8,6 +8,6 @@ const router = express.Router()
 
 router.post('/', authToken, ...validators.validateRequiredFields(requiredFields.createPassword) , createPassword)
 router.put('/', authToken, ...validators.validateRequiredFields(requiredFields.updatePassword) , updatePassword)
-router.delete('/', authToken, ...validators.validateRequiredFields(requiredFields.deletePassword) , deletePassword)
+router.post('/delete', authToken, ...validators.validateRequiredFields(requiredFields.deletePassword) , deletePassword)
 
 module.exports = router

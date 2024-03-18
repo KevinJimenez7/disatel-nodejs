@@ -15,12 +15,11 @@ exports.changePassword = {
 }
 
 exports.resetPassword = {
-    email: "Ingresa el correo electrónico"
+    id: "Ingresa id del usuario"
 }
 
 exports.activateUser = {
-    email: "Ingresa el correo electrónico",
-    active: "Ingresa el estado de activación"
+    id: "Ingresa el id del usuario"
 }
 
 exports.editUser = {
@@ -28,7 +27,7 @@ exports.editUser = {
     lastName: "Ingresa el apellido",
     phone: "Ingresa el número de telefono",
     email: "Ingresa el correo electrónico actual",
-    newEmail: "Ingresa el nuevo correo electrónico"
+    id: "Ingresa el id del usuario"
 }
 
 exports.createFolder = {
